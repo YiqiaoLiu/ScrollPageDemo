@@ -9,6 +9,11 @@ public class ScrollController : MonoBehaviour, IBeginDragHandler, IEndDragHandle
     private int pageCount = 0;
 
     /// <summary>
+    /// The page-changing speed
+    /// </summary>
+    private float slideSpeed = 5f;
+
+    /// <summary>
     /// The ScrollRect component
     /// </summary>
     private ScrollRect rect;
@@ -23,6 +28,11 @@ public class ScrollController : MonoBehaviour, IBeginDragHandler, IEndDragHandle
     /// </summary>
     private float[] pages = { 0, 0.25f, 0.5f, 0.75f, 1f };
 
+    /// <summary>
+    /// The next page position
+    /// </summary>
+    private float targetPos;
+
 	// Use this for initialization
 	void Start () {
         pageCount = this.transform.childCount;
@@ -33,7 +43,10 @@ public class ScrollController : MonoBehaviour, IBeginDragHandler, IEndDragHandle
 	
 	// Update is called once per frame
 	void Update () {
-
+        if (!isDrag) {
+            rect.horizontalNormalizedPosition = Mathf.Lerp(rect.horizontalNormalizedPosition, targetPos, Time.deltaTime * slideSpeed);
+            Debug.Log("check: " + Time.deltaTime * slideSpeed);
+        }
     }
 
     public void OnBeginDrag(PointerEventData data) {
@@ -60,8 +73,10 @@ public class ScrollController : MonoBehaviour, IBeginDragHandler, IEndDragHandle
                 dragOffset = tempOffset;
                 pageIndex = i;
             }
-
-            rect.horizontalNormalizedPosition = pages[pageIndex];
         }
+
+        //Store the calculated changing page position
+        targetPos = pages[pageIndex];
+
     }
 }
