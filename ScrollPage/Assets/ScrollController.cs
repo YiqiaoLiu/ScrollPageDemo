@@ -7,13 +7,27 @@ using UnityEngine.UI;
 public class ScrollController : MonoBehaviour, IBeginDragHandler, IEndDragHandler {
 
     private int pageCount = 0;
+
+    /// <summary>
+    /// The ScrollRect component
+    /// </summary>
     private ScrollRect rect;
+
+    /// <summary>
+    /// To check whether the drag is finish
+    /// </summary>
     private bool isDrag = false;
+
+    /// <summary>
+    /// Store each page offset (now it is static)
+    /// </summary>
     private float[] pages = { 0, 0.25f, 0.5f, 0.75f, 1f };
 
 	// Use this for initialization
 	void Start () {
         pageCount = this.transform.childCount;
+
+        //Get the ScrollRect Component
         rect = GetComponent<ScrollRect>();
 	}
 	
