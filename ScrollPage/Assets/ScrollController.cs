@@ -2,11 +2,14 @@
 using System.Collections;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
-
+using System.Collections.Generic;
 
 public class ScrollController : MonoBehaviour, IBeginDragHandler, IEndDragHandler {
 
-    private int pageCount = 0;
+    /// <summary>
+    /// Store the last time the number of page
+    /// </summary>
+    private float lastTimePage;
 
     /// <summary>
     /// The page-changing speed
@@ -24,9 +27,9 @@ public class ScrollController : MonoBehaviour, IBeginDragHandler, IEndDragHandle
     private bool isDrag = false;
 
     /// <summary>
-    /// Store each page offset (now it is static)
+    /// Store each page offset dynamically
     /// </summary>
-    private float[] pages = { 0, 0.25f, 0.5f, 0.75f, 1f };
+    private List<float> pages = new List<float>();
 
     /// <summary>
     /// The next page position
@@ -35,7 +38,16 @@ public class ScrollController : MonoBehaviour, IBeginDragHandler, IEndDragHandle
 
 	// Use this for initialization
 	void Start () {
-        pageCount = this.transform.childCount;
+
+        //Store the initial number of page
+        lastTimePage = this.transform.GetChild(0).childCount;
+
+        //The first calculate of the page offset
+        for (float i = 0; i < lastTimePage; i++)
+        {
+            float temp = i / (lastTimePage - 1);
+            pages.Add(temp);
+        }
 
         //Get the ScrollRect Component
         rect = GetComponent<ScrollRect>();
@@ -43,16 +55,28 @@ public class ScrollController : MonoBehaviour, IBeginDragHandler, IEndDragHandle
 	
 	// Update is called once per frame
 	void Update () {
+
+        //Calculate the page offset
+        CalculatePageOffset();
+
+        //When drag is finish, do the page change
         if (!isDrag) {
             rect.horizontalNormalizedPosition = Mathf.Lerp(rect.horizontalNormalizedPosition, targetPos, Time.deltaTime * slideSpeed);
-            Debug.Log("check: " + Time.deltaTime * slideSpeed);
         }
     }
 
+    /// <summary>
+    /// Trigger when drag start
+    /// </summary>
+    /// <param name="data"></param>
     public void OnBeginDrag(PointerEventData data) {
         isDrag = true;
     }
 
+    /// <summary>
+    /// Trigger when drag ending
+    /// </summary>
+    /// <param name="data"></param>
     public void OnEndDrag(PointerEventData data) {
         isDrag = false;
 
@@ -77,6 +101,28 @@ public class ScrollController : MonoBehaviour, IBeginDragHandler, IEndDragHandle
 
         //Store the calculated changing page position
         targetPos = pages[pageIndex];
+
+    }
+
+    /// <summary>
+    /// Calculate each page offset and store them in the page list
+    /// </summary>
+    private void CalculatePageOffset() {
+        
+        //Get the number of page
+        int pageNumber = this.transform.GetChild(0).childCount;
+
+        //If the page number does not change, just return
+        if (pageNumber == lastTimePage) return;
+
+        //If there isn't any page, return immediately
+        if (pageNumber == 0) return;
+
+        //Recalculate the offset of each page
+        for (float i = 0; i < pageNumber; i++) {
+            float temp = i / (pageNumber - 1);
+            pages.Add(temp);
+        }
 
     }
 }
