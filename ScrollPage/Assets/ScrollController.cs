@@ -9,7 +9,7 @@ public class ScrollController : MonoBehaviour, IBeginDragHandler, IEndDragHandle
     /// <summary>
     /// Store the last time the number of page
     /// </summary>
-    private float lastTimePage;
+    private int lastTimePage;
 
     /// <summary>
     /// The page-changing speed
@@ -36,6 +36,8 @@ public class ScrollController : MonoBehaviour, IBeginDragHandler, IEndDragHandle
     /// </summary>
     private float targetPos;
 
+    public ToggleController toggle;
+
 	// Use this for initialization
 	void Start () {
 
@@ -48,6 +50,8 @@ public class ScrollController : MonoBehaviour, IBeginDragHandler, IEndDragHandle
             float temp = i / (lastTimePage - 1);
             pages.Add(temp);
         }
+
+        toggle.PageChanged(lastTimePage, 0);
 
         //Get the ScrollRect Component
         rect = GetComponent<ScrollRect>();
@@ -91,7 +95,7 @@ public class ScrollController : MonoBehaviour, IBeginDragHandler, IEndDragHandle
 
         //Caculating the offset between each page and the current pos
         //Chosing the closest page as the next frame changing page
-        for (int i = 1; i < 5; i++) {
+        for (int i = 1; i < lastTimePage; i++) {
             float tempOffset = Mathf.Abs(pages[i] - posHorizontal);
             if (tempOffset < dragOffset) {
                 dragOffset = tempOffset;
@@ -102,6 +106,7 @@ public class ScrollController : MonoBehaviour, IBeginDragHandler, IEndDragHandle
         //Store the calculated changing page position
         targetPos = pages[pageIndex];
 
+        toggle.PageChanged(lastTimePage, pageIndex);
     }
 
     /// <summary>
@@ -124,5 +129,7 @@ public class ScrollController : MonoBehaviour, IBeginDragHandler, IEndDragHandle
             pages.Add(temp);
         }
 
+        //Update the number of page
+        lastTimePage = pageNumber;
     }
 }
