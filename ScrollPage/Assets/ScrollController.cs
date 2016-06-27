@@ -36,6 +36,9 @@ public class ScrollController : MonoBehaviour, IBeginDragHandler, IEndDragHandle
     /// </summary>
     private float targetPos;
 
+    /// <summary>
+    /// The ToggleController Script component
+    /// </summary>
     public ToggleController toggle;
 
 	// Use this for initialization
@@ -51,6 +54,7 @@ public class ScrollController : MonoBehaviour, IBeginDragHandler, IEndDragHandle
             pages.Add(temp);
         }
 
+        //At the begining, the index is always 0.
         toggle.PageChanged(lastTimePage, 0);
 
         //Get the ScrollRect Component
@@ -106,6 +110,7 @@ public class ScrollController : MonoBehaviour, IBeginDragHandler, IEndDragHandle
         //Store the calculated changing page position
         targetPos = pages[pageIndex];
 
+        //When page changed, call the function in the toggle game object to deal with the toggle action.
         toggle.PageChanged(lastTimePage, pageIndex);
     }
 
